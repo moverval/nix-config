@@ -15,13 +15,65 @@
   # release notes.
   home.stateVersion = "25.11"; # Please read the comment before changing.
 
+  programs.neovim = let
+    toLua = str: "lua << EOF\n${str}\nEOF\n";
+    toLuaFile = file: "lua << EOF\n${builtins.readFile file}\nEOF\n";
+  in
+  {
+    enable = true;
+    viAlias = true;
+    vimAlias = true;
+    vimdiffAlias = true;
+
+    extraLuaConfig = ''
+      ${builtins.readFile ./dotfiles/neovim/options.lua}
+    '';
+
+    plugins = with pkgs.vimPlugins; [
+      {
+        plugin = comment-nvim;
+	config = toLua "require(\"Comment\").setup()";
+      }
+
+      {
+        plugin = nvim-lspconfig;
+	config = toLuaFile ./dotfiles/neovim/plugin/lsp.lua;
+      }
+
+      {
+        plugin = nvim-cmp;
+	config = toLuaFile ./dotfiles/neovim/plugin/cmp.lua;
+      }
+
+      {
+        plugin = telescope-nvim;
+	config = toLuaFile ./dotfiles/neovim/plugin/telescope.lua;
+      }
+
+      telescope-fzf-native-nvim
+      cmp_luasnip
+      luasnip
+      friendly-snippets
+      lualine-nvim
+
+      (nvim-treesitter.withPlugins (p: [
+        p.tree-sitter-nix
+	p.tree-sitter-vim
+	p.tree-sitter-bash
+	p.tree-sitter-lua
+	p.tree-sitter-python
+	p.tree-sitter-json
+	p.tree-sitter-rust
+      ]))
+    ];
+  };
+
   # The home.packages option allows you to install Nix packages into your
   # environment.
   home.packages = with pkgs; [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
-    neovim
     git
     jujutsu
 
