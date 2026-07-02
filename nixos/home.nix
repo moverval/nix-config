@@ -25,11 +25,16 @@
     vimAlias = true;
     vimdiffAlias = true;
 
-    extraLuaConfig = ''
+    initLua = ''
       ${builtins.readFile ./dotfiles/neovim/options.lua}
     '';
 
     plugins = with pkgs.vimPlugins; [
+	  {
+		plugin = gruvbox-material;
+		config = "colorscheme gruvbox-material";
+	  }
+
       {
         plugin = comment-nvim;
 	config = toLua "require(\"Comment\").setup()";
@@ -55,6 +60,8 @@
       luasnip
       friendly-snippets
       lualine-nvim
+      cmp-nvim-lsp
+      neodev-nvim
 
       (nvim-treesitter.withPlugins (p: [
         p.tree-sitter-nix
