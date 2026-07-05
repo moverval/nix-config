@@ -19,6 +19,11 @@
     }@inputs:
     let
       system = "x86_64-linux";
+      user = {
+        name = "moritz";
+        comment = "Moritz";
+        location = "/home/moritz";
+      };
       pkgs = import nixpkgs {
         inherit system;
         config = {
@@ -26,32 +31,41 @@
         };
       };
       nixosSystem =
-        { hwConfig }:
+        { modules, user }:
         nixpkgs.lib.nixosSystem {
-          specialArgs = { inherit inputs system hwConfig; };
+          specialArgs = {
+            inherit inputs system user;
+          };
 
-          modules = [
-            ./nixos/configuration.nix
-          ];
+          modules = modules;
         };
     in
     {
       nixosConfigurations = {
-        main = nixosSystem {
-          hwConfig = ./nixos/hardware/main.nix;
+        moritz = nixosSystem {
+          user = user;
+          modules = [
+            ./nixos/default.nix
+            ./nixos/graphical.nix
+            ./nixos/sound.nix
+            ./nixos/locale.nix
+          ];
         };
       };
 
-      homeConfigurations."moritz" = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
+      homeConfigurations = {
+        moritz = home-manager.lib.homeManagerConfiguration {
+          inherit pkgs;
 
-        extraSpecialArgs = {
-          inherit inputs;
+          extraSpecialArgs = {
+            inherit inputs user;
+          };
+
+          modules = [
+            ./home/home.nix
+            ./home/applications/all.nix
+          ];
         };
-
-        modules = [
-          ./nixos/home.nix
-        ];
       };
     };
 }
