@@ -1,10 +1,31 @@
-{ config, pkgs, ... }:
+{
+  pkgs,
+  ...
+}:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "moritz";
   home.homeDirectory = "/home/moritz";
+
+  imports = [
+    ./applications/steam.nix
+  ];
+
+  home.pointerCursor = {
+    package = pkgs.bibata-cursors;
+    name = "Bibata-Modern-Classic";
+    size = 24;
+  };
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = "adw-gtk3-dark";
+      package = pkgs.adw-gtk3;
+    };
+  };
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -13,67 +34,74 @@
   # You should not change this value, even if you update Home Manager. If you do
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
-  home.stateVersion = "25.11"; # Please read the comment before changing.
+  home.stateVersion = "26.05"; # Please read the comment before changing.
+  nixpkgs.config.allowUnfree = true;
 
-  programs.neovim = let
-    toLua = str: "lua << EOF\n${str}\nEOF\n";
-    toLuaFile = file: "lua << EOF\n${builtins.readFile file}\nEOF\n";
-  in
-  {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    vimdiffAlias = true;
+  programs.neovim =
+    let
+      toLua = str: "lua << EOF\n${str}\nEOF\n";
+      toLuaFile = file: "lua << EOF\n${builtins.readFile file}\nEOF\n";
+    in
+    {
+      enable = true;
+      viAlias = true;
+      vimAlias = true;
+      vimdiffAlias = true;
 
-    initLua = ''
-      ${builtins.readFile ./dotfiles/neovim/options.lua}
-    '';
+      initLua = ''
+        ${builtins.readFile ./dotfiles/neovim/options.lua}
+      '';
 
-    plugins = with pkgs.vimPlugins; [
-	  {
-		plugin = gruvbox-material;
-		config = "colorscheme gruvbox-material";
-	  }
+      plugins = with pkgs.vimPlugins; [
+        {
+          type = "viml";
+          plugin = gruvbox-material;
+          config = "colorscheme gruvbox-material";
+        }
 
-      {
-        plugin = comment-nvim;
-	config = toLua "require(\"Comment\").setup()";
-      }
+        {
+          type = "viml";
+          plugin = comment-nvim;
+          config = toLua "require(\"Comment\").setup()";
+        }
 
-      {
-        plugin = nvim-lspconfig;
-	config = toLuaFile ./dotfiles/neovim/plugin/lsp.lua;
-      }
+        {
+          type = "viml";
+          plugin = nvim-lspconfig;
+          config = toLuaFile ./dotfiles/neovim/plugin/lsp.lua;
+        }
 
-      {
-        plugin = nvim-cmp;
-	config = toLuaFile ./dotfiles/neovim/plugin/cmp.lua;
-      }
+        {
+          type = "viml";
+          plugin = nvim-cmp;
+          config = toLuaFile ./dotfiles/neovim/plugin/cmp.lua;
+        }
 
-      {
-        plugin = telescope-nvim;
-	config = toLuaFile ./dotfiles/neovim/plugin/telescope.lua;
-      }
+        {
+          type = "viml";
+          plugin = telescope-nvim;
+          config = toLuaFile ./dotfiles/neovim/plugin/telescope.lua;
+        }
 
-      telescope-fzf-native-nvim
-      cmp_luasnip
-      luasnip
-      friendly-snippets
-      lualine-nvim
-      cmp-nvim-lsp
-      neodev-nvim
+        telescope-fzf-native-nvim
+        cmp_luasnip
+        luasnip
+        friendly-snippets
+        lualine-nvim
+        cmp-nvim-lsp
+        neodev-nvim
 
-      (nvim-treesitter.withPlugins (p: [
-        p.tree-sitter-nix
-	p.tree-sitter-vim
-	p.tree-sitter-bash
-	p.tree-sitter-lua
-	p.tree-sitter-python
-	p.tree-sitter-json
-	p.tree-sitter-rust
-      ]))
-    ];
-  };
+        (nvim-treesitter.withPlugins (p: [
+          p.tree-sitter-nix
+          p.tree-sitter-vim
+          p.tree-sitter-bash
+          p.tree-sitter-lua
+          p.tree-sitter-python
+          p.tree-sitter-json
+          p.tree-sitter-rust
+        ]))
+      ];
+    };
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
@@ -83,6 +111,16 @@
     # pkgs.hello
     git
     jujutsu
+    keepassxc
+    git-credential-keepassxc
+    ripgrep
+
+    typst
+    tinymist
+    zathura
+    nil
+    zed-editor
+    zoxide
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -130,7 +168,6 @@
   #  /etc/profiles/per-user/moritz/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
     EDITOR = "nvim";
   };
 
