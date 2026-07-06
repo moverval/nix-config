@@ -24,6 +24,18 @@
         comment = "Moritz";
         location = "/home/moritz";
       };
+      homeConfig = {
+        inherit pkgs;
+
+        extraSpecialArgs = {
+          inherit inputs user;
+        };
+
+        modules = [
+          ./home/home.nix
+          ./home/applications/all.nix
+        ];
+      };
       pkgs = import nixpkgs {
         inherit system;
         config = {
@@ -31,10 +43,19 @@
         };
       };
       nixosSystem =
-        { modules, user }:
+        {
+          modules,
+          user,
+          homeModules,
+        }:
         nixpkgs.lib.nixosSystem {
           specialArgs = {
-            inherit inputs system user;
+            inherit
+              inputs
+              system
+              user
+              ;
+            homeModules = homeModules;
           };
 
           modules = modules;
@@ -50,22 +71,12 @@
             ./nixos/sound.nix
             ./nixos/locale.nix
           ];
+          homeModules = homeConfig.modules;
         };
       };
 
       homeConfigurations = {
-        moritz = home-manager.lib.homeManagerConfiguration {
-          inherit pkgs;
-
-          extraSpecialArgs = {
-            inherit inputs user;
-          };
-
-          modules = [
-            ./home/home.nix
-            ./home/applications/all.nix
-          ];
-        };
+        moritz = home-manager.lib.homeManagerConfiguration homeConfig;
       };
     };
 }

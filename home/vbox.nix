@@ -18,6 +18,7 @@ let
         bind = {
           rw = [
             location
+            "/run"
           ];
 
           ro = [
@@ -25,7 +26,6 @@ let
             "/nix"
             "/usr"
             "/etc"
-            "/run"
             "/sys"
             "/tmp/.X11-unix"
             "/proc"

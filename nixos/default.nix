@@ -6,6 +6,7 @@
   inputs,
   pkgs,
   user,
+  homeModules,
   ...
 }:
 
@@ -18,7 +19,10 @@
   home-manager = {
     extraSpecialArgs = { inherit inputs user; };
     users = {
-      "${user.name}" = import ../home/home.nix;
+      "${user.name}" = { ... }: {
+        home.stateVersion = "26.05";
+        imports = homeModules;
+      };
     };
   };
 
