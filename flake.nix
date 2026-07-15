@@ -33,7 +33,7 @@
 
         modules = [
           ./home/home.nix
-          ./home/applications/all.nix
+          ./home/applications/profiles/all.nix
         ];
       };
       pkgs = import nixpkgs {
@@ -63,7 +63,7 @@
     in
     {
       nixosConfigurations = {
-        moritz = nixosSystem {
+        default = nixosSystem {
           user = user;
           modules = [
             ./nixos/default.nix
@@ -76,7 +76,7 @@
       };
 
       homeConfigurations = {
-        moritz = home-manager.lib.homeManagerConfiguration homeConfig;
+        default = home-manager.lib.homeManagerConfiguration homeConfig;
       };
     };
 }

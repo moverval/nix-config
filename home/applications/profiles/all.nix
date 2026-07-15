@@ -1,22 +1,29 @@
 { pkgs, ... }: {
   imports = [
-    ./neovim.nix
-    ./steam.nix
+    ./base.nix
+    # Neovim editor with config
+    ../neovim.nix
+    # Steam with sandboxing
+    ../steam.nix
   ];
 
+  # Each base package should have a reason why it stands here
   home.packages = with pkgs; [
-    git
-    firefox
-    keepassxc
-    git-credential-keepassxc
-    ripgrep
-
+    # For writing pdfs
     typst
+    # Language server for writing pdfs
     tinymist
+    # For reading pdfs
     zathura
-    nil
-    zed-editor
-    zoxide
+
+    # Convert video and audio
+    ffmpeg
+
+    # Calculator
+    julia
+
+    # Recording
+    obs-studio
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
