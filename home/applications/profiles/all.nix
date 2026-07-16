@@ -9,6 +9,7 @@
     ../virt-manager.nix
     # Development
     ../devenv.nix
+    ../ddg_bangs.nix
   ];
 
   programs.zoxide.enable = true;
