@@ -1,0 +1,10 @@
+# Devenv
+.devenv/
+devenv.local.nix
+devenv.json.lock
+
+# Direnv
+.direnv
+.envrc
+
+target/

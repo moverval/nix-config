@@ -70,6 +70,8 @@
             ./nixos/graphical.nix
             ./nixos/sound.nix
             ./nixos/locale.nix
+            # Support for virtual machines
+            ./nixos/virtual.nix
           ];
           homeModules = homeConfig.modules;
         };

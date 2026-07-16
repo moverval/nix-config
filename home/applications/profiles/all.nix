@@ -5,6 +5,8 @@
     ../neovim.nix
     # Steam with sandboxing
     ../steam.nix
+    # Virtual machine interface
+    ../virt-manager.nix
   ];
 
   # Each base package should have a reason why it stands here
@@ -15,6 +17,9 @@
     tinymist
     # For reading pdfs
     zathura
+
+    # Development
+    devenv
 
     # Convert video and audio
     ffmpeg
