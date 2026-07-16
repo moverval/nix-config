@@ -7,7 +7,11 @@
     ../steam.nix
     # Virtual machine interface
     ../virt-manager.nix
+    # Development
+    ../devenv.nix
   ];
+
+  programs.zoxide.enable = true;
 
   # Each base package should have a reason why it stands here
   home.packages = with pkgs; [
@@ -17,9 +21,6 @@
     tinymist
     # For reading pdfs
     zathura
-
-    # Development
-    devenv
 
     # Convert video and audio
     ffmpeg
