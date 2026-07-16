@@ -36,6 +36,7 @@
     "nix-command"
     "flakes"
   ];
+  nix.settings.trusted-users = [ "root" "@wheel" ];
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
