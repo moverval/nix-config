@@ -17,3 +17,17 @@ home-manager switch --flake github:moverval/nig-config/main#default
 # Change Username
 
 The user configuration can be updated in `flake.nix`.
+
+# Minimal configuration
+
+To just get a system as fast as possible running without locales, graphics, sound etc. use
+
+```sh
+sudo nixos-rebuild switch --flake github:moverval/nix-config/main#minimal --impure
+```
+
+With home-manager
+
+```sh
+home-manager switch --flake github:moverval/nig-config/main#minimal
+```

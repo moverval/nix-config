@@ -36,6 +36,18 @@
           ./home/applications/profiles/all.nix
         ];
       };
+      homeConfigBase = {
+        inherit pkgs;
+
+        extraSpecialArgs = {
+          inherit inputs user;
+        };
+
+        modules = [
+          ./home/home.nix
+          ./home/applications/profile/base.nix
+        ];
+      };
       pkgs = import nixpkgs {
         inherit system;
         config = {
@@ -75,10 +87,18 @@
           ];
           homeModules = homeConfig.modules;
         };
+        minimal = nixosSystem {
+          user = user;
+          modules = [
+            ./nixos/default.nix
+          ];
+          homeModules = homeConfigBase.modules;
+        };
       };
 
       homeConfigurations = {
         default = home-manager.lib.homeManagerConfiguration homeConfig;
+        minimal = home-manager.lib.homeManagerConfiguration homeConfigBase;
       };
     };
 }
