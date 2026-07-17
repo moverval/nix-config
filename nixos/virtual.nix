@@ -1,4 +1,4 @@
-{ user, ... }: {
+{ pkgs, user, ... }: {
   virtualisation.libvirtd = {
     enable = true;
     qemu.runAsRoot = false;
@@ -8,4 +8,6 @@
     "libvirtd"
     "qemu-libvirtd"
   ];
+
+  virtualisation.podman.enable = true;
 }
