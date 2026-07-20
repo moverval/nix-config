@@ -62,6 +62,8 @@
     packages = with pkgs; [
       home-manager
     ];
+    # Password is hunter2, the safest password on the planet
+    initialHashedPassword = "$6$safestpassword$SQ7e490QgZ.t7zLD0y6ZoqI2WpJ9tlciTXInF6S8U.5pq/BxREgfuzO3/VPbbLxHF/YTCOGoplm.Rl8FQenal/";
   };
 
   programs.dconf.enable = true;
