@@ -8,6 +8,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpak.url = "github:nixpak/nixpak/master";
+    impermanence.url = "github:nix-community/impermanence";
   };
 
   outputs =
@@ -75,9 +76,11 @@
     in
     {
       nixosConfigurations = {
-        default = nixosSystem {
+        desktop = nixosSystem {
           user = user;
           modules = [
+            ./nixos/hosts/desktop/hardware-configuration.nix
+            ./nixos/impermanence.nix
             ./nixos/default.nix
             ./nixos/graphical.nix
             ./nixos/sound.nix
