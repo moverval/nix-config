@@ -1,6 +1,8 @@
 { pkgs, ... }: {
   # Each base package should have a reason why it stands here
   home.packages = with pkgs; [
+    # Terminal
+    kitty
     # For development and versioning of every project
     git
     # Minimal editor

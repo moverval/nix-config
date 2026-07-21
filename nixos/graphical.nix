@@ -1,12 +1,30 @@
-{ ... }: {
+{ pkgs, ... }: {
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
 
   services.xserver.enable = true;
 
-  services.displayManager.cosmic-greeter.enable = true;
-  services.desktopManager.cosmic.enable = true;
-  services.system76-scheduler.enable = true;
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    waybar
+    dunst
+    libnotify
+    awww
+    rofi
+  ];
+
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [
+    pkgs.xdg-desktop-portal-gtk
+  ];
+
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+  };
 
   services.xserver.xkb = {
     layout = "eu";
