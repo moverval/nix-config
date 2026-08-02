@@ -53,9 +53,10 @@
     description = "Wipes btrfs root when booting";
     wantedBy = [ "initrd.target" ];
 
-    # Der Dienst muss NACHDEM das Btrfs-Gerät bereit ist, aber VOR dem eigentlichen Mounten laufen
-    after = [ "dev-disk-by\x2duuid-ae5b0cba\x2d8314\x2d468c\x2d8efc\x2d4174aeca6027.device" ];
+    after = [ "dev-disk-by\\x2duuid-ae5b0cba\\x2d8314\\x2d468c\\x2d8efc\\x2d4174aeca6027.device" ];
     before = [ "sysroot.mount" ];
+
+    path = [ pkgs.btrfs-progs pkgs.coreutils pkgs.util-linux ];
 
     unitConfig.DefaultDependencies = "no";
     serviceConfig.Type = "oneshot";
@@ -64,12 +65,31 @@
       mkdir -p /mnt
       mount -o subvol=/ /dev/disk/by-uuid/ae5b0cba-8314-468c-8efc-4174aeca6027 /mnt
 
-      echo "Reset root subvolume"
-      btrfs subvolume delete /mnt/root
+      cleanup() {
+        echo "Unmounting /mnt"
+        umount /mnt || true
+      }
+      trap cleanup EXIT
 
+      if [ ! -e /mnt/root-blank ]; then
+        echo "ERROR: Pristine snapshot /mnt/root-blank does not exist!"
+        exit 1
+      fi
+
+      if [ -e /mnt/root ]; then
+        echo "Found existing /root subvolume. Cleaning up..."
+
+        btrfs subvolume list -o /mnt/root | while read -r f1 f2 f3 f4 f5 f6 f7 f8 f9; do
+          echo "Deleting nested subvolume: /mnt/$f9"
+          btrfs subvolume delete "/mnt/$f9"
+        done
+
+        echo "Deleting /root subvolume..."
+        btrfs subvolume delete /mnt/root
+      fi
+
+      echo "Restoring pristine /root subvolume..."
       btrfs subvolume snapshot /mnt/root-blank /mnt/root
-
-      umount /mnt
     '';
   };
 }
