@@ -1,4 +1,4 @@
-{ inputs, pkgs, ... }: {
+{ inputs, pkgs, lib, ... }: {
   imports = [ inputs.impermanence.nixosModules.impermanence ];
 
   environment.persistence."/persist" = {
@@ -17,6 +17,13 @@
       "/etc/group"
       "/etc/shadow"
     ];
+  };
+
+  virtualisation.vmVariant = {
+    environment.persistence."/persist".files = lib.mkForce [
+      "/etc/machine-id"
+    ];
+    systemd.services.clean-etc-for-impermanence.enable = lib.mkForce false;
   };
 
   # Workaround for systemd-based initrd: NixOS activation creates /etc/passwd etc. in early boot,
