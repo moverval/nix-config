@@ -1,8 +1,22 @@
-{ pkgs, ... }: {
+{ inputs, system, pkgs, ... }: {
   hardware.graphics.enable = true;
   hardware.graphics.enable32Bit = true;
 
-  services.xserver.enable = true;
+  services.xserver.enable = false;
+
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        # Launches a clean terminal login prompt that safely hands over control to UWSM
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd 'start-hyprland'";
+        user = "greeter";
+      };
+    };
+  };
+
+  # Prevent the greeter user from failing permissions on real graphics cards
+  users.users.greeter.extraGroups = [ "video" "render" ];
 
   programs.hyprland = {
     enable = true;
@@ -10,11 +24,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    waybar
-    dunst
-    libnotify
-    awww
-    rofi
+    inputs.quickshell.packages.${system}.default
   ];
 
   xdg.portal.enable = true;

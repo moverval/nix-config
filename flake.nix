@@ -9,6 +9,10 @@
     };
     nixpak.url = "github:nixpak/nixpak/master";
     impermanence.url = "github:nix-community/impermanence";
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -29,7 +33,7 @@
         inherit pkgs;
 
         extraSpecialArgs = {
-          inherit inputs user;
+          inherit inputs system user;
         };
 
         modules = [

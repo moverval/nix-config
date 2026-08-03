@@ -3,6 +3,8 @@
   home.packages = with pkgs; [
     # Terminal
     kitty
+    # File-manager
+    nemo
     # For development and versioning of every project
     git
     # Minimal editor
