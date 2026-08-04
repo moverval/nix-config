@@ -9,7 +9,6 @@
     ../virt-manager.nix
     # Development
     ../devenv.nix
-    ../ddg_bangs.nix
   ];
 
   programs.zoxide.enable = true;
@@ -31,6 +30,10 @@
 
     # Recording
     obs-studio
+
+    # Screenshot
+    flameshot
+    wl-clipboard
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the

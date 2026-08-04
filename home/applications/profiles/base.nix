@@ -1,10 +1,15 @@
 { pkgs, ... }: {
+  imports = [
+    ../yazi.nix
+  ];
+
   # Each base package should have a reason why it stands here
   home.packages = with pkgs; [
     # Terminal
     kitty
     # File-manager
-    nemo
+    yazi
+    thunar
     # For development and versioning of every project
     git
     # Minimal editor

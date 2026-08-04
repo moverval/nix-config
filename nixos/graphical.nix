@@ -25,6 +25,7 @@
 
   environment.systemPackages = with pkgs; [
     inputs.quickshell.packages.${system}.default
+    awww
   ];
 
   xdg.portal.enable = true;

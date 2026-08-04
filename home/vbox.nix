@@ -14,11 +14,17 @@ let
       app.package = package;
       bubblewrap = {
         network = true;
+        sockets = {
+          x11 = true;
+          wayland = true;
+          pulse = true;
+        };
 
         bind = {
           rw = [
             location
             "/run"
+            "/tmp"
           ];
 
           ro = [
@@ -27,8 +33,8 @@ let
             "/usr"
             "/etc"
             "/sys"
-            "/tmp/.X11-unix"
             "/proc"
+            "/var"
           ];
 
           dev = [
@@ -37,8 +43,6 @@ let
         };
 
         tmpfs = [
-          "/tmp"
-          "/var"
         ];
 
         env = {
