@@ -12,8 +12,8 @@
     # File-manager
     yazi
     thunar
-    # For development and versioning of every project
-    git
+    # # For development and versioning of every project
+    # git
     # Minimal editor
     vim
     # Internet access
@@ -41,4 +41,18 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+
+  programs.git = {
+    enable = true;
+
+    settings = {
+      init.defaultBranch = "main";
+      core.editor = "hx";
+
+      alias = {
+        st = "status";
+        co = "checkout";      
+      };
+    };
+  };
 }
