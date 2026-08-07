@@ -35,6 +35,8 @@ let
             "/sys"
             "/proc"
             "/var"
+            (sloth.concat' sloth.homeDir "/.nix-profile/bin")
+            "/nix/profile/bin"
           ];
 
           dev = [
@@ -49,6 +51,7 @@ let
           "HOME" = location;
           "XDG_DATA_HOME" = "${location}/.local/share";
           "XDG_CONFIG_HOME" = "${location}/.config";
+          "PATH" = sloth.env "PATH";
         };
       };
     };
