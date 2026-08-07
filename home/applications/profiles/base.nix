@@ -7,6 +7,8 @@
   home.packages = with pkgs; [
     # Terminal
     kitty
+    nerd-fonts.fira-code
+
     # File-manager
     yazi
     thunar
@@ -24,6 +26,7 @@
     ripgrep
     # Editor for just everything
     zed-editor
+    helix
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the

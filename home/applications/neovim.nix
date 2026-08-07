@@ -64,8 +64,4 @@
         ]))
       ];
     };
-
-  home.sessionVariables = {
-    EDITOR = "nvim";
-  };
 }
