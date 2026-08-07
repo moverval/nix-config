@@ -43,4 +43,6 @@
     options = "caps:escape";
   };
   console.useXkbConfig = true;
+
+  programs.gamescope.capSysNice = true;  
 }
