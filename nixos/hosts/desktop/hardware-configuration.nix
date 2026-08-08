@@ -53,16 +53,15 @@
       exit 1
     fi
 
-    echo 1 > "$HWMON_DIR/pwm1_enable"
-
     while true; do
+      echo 1 > "$HWMON_DIR/pwm1_enable"
       if [ -f "$HWMON_DIR/temp1_input" ]; then
         TEMP=$(cat "$HWMON_DIR/temp1_input")
         X=$((TEMP / 1000))
 
         PWM_CALC=$(bc -l <<EOF
           x = $X
-          p = (0.0285 * (x^2)) + (0.0247 * x) + 2.9
+          p = (0.075 * (x^2)) - (2.82 * x) + 0.0
           scale = 0
           p / 1
 EOF
