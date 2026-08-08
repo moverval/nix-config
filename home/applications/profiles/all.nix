@@ -32,7 +32,9 @@
     obs-studio
 
     # Screenshot
-    flameshot
+    grim
+    slurp
+    swappy
     wl-clipboard
 
     # Terminal manager

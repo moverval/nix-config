@@ -5,6 +5,7 @@
 {
   inputs,
   pkgs,
+  pkgs-unstable,
   user,
   homeModules,
   ...
@@ -16,7 +17,12 @@
   ];
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs user; };
+    useGlobalPkgs = false;
+    useUserPackages = true;
+    extraSpecialArgs = {
+      inherit inputs user;
+      pkgs = pkgs-unstable;
+    };
     users = {
       "${user.name}" = { ... }: {
         home.stateVersion = "26.05";
