@@ -1,5 +1,6 @@
 { pkgs, ... }: {
   imports = [
+    ../git.nix
     ../yazi.nix
   ];
 
@@ -12,8 +13,6 @@
     # File-manager
     yazi
     thunar
-    # # For development and versioning of every project
-    # git
     # Minimal editor
     vim
     # Internet access
@@ -27,6 +26,7 @@
     # Editor for just everything
     zed-editor
     helix
+    gitui
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -41,18 +41,4 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
-
-  programs.git = {
-    enable = true;
-
-    settings = {
-      init.defaultBranch = "main";
-      core.editor = "hx";
-
-      alias = {
-        st = "status";
-        co = "checkout";      
-      };
-    };
-  };
 }
