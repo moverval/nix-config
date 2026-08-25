@@ -13,6 +13,14 @@
     ./gtk.nix
   ];
 
+  programs.bash = {
+    bashrcExtra = ''
+      function d() {
+        command nohup $@ > /dev/null 2>&1 &
+      }
+    '';
+  };
+
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
   # introduces backwards incompatible changes.

@@ -16,6 +16,8 @@
   boot.kernelParams = [
     "amdgpu.ppfeaturemask=0xffffffff"
     "resume_offset=88155392"
+    "amdgpu.mcbp=0"
+    "iommu=pt"
   ];
 
   # The amdgpu driver doesn't manage the gpu temperature curve correctly and destroys the gpu
@@ -23,7 +25,7 @@
   # 50% load under 110 degrees. This script starts fans at high load with a continuous curve.
   systemd.services.amdgpu-fan-curve = {
     description = "AMD GPU Fan Curve Service";
-    wantedBy = [ "multi-user.target" ];
+    wantedBy = [ "graphical.target" ];
     after = [ "graphical.target" ];
 
     path = with pkgs; [ coreutils gnugrep gnused bash bc ];
