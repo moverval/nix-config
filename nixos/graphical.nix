@@ -45,4 +45,5 @@
   console.useXkbConfig = true;
 
   programs.gamescope.capSysNice = true;  
+  programs.gamemode.enable = true;
 }

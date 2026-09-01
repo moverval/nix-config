@@ -5,10 +5,13 @@
     ../neovim.nix
     # Steam with sandboxing
     ../steam.nix
+    ../heroic.nix
     # Virtual machine interface
     ../virt-manager.nix
     # Development
     ../devenv.nix
+    # Isolate Folder Script
+    ../isolate.nix
   ];
 
   programs.zoxide.enable = true;
@@ -42,6 +45,12 @@
 
     # Game compositor
     gamescope
+
+    # AI
+    pi-coding-agent
+
+    # Music!
+    cliamp
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
