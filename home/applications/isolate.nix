@@ -16,6 +16,7 @@
         --unshare-user-try
         --unshare-pid
         --dir /
+        --dir /sys
         --tmpfs /tmp
         --tmpfs /run
         --proc /proc
@@ -23,7 +24,8 @@
         --ro-bind /nix /nix
         --ro-bind /usr /usr
         --ro-bind /etc /etc
-        --dir /sys
+        --ro-bind /run/wrappers/bin /run/wrappers/bin
+        --ro-bind /run/current-system/sw/bin /run/current-system/sw/bin
         --ro-bind /var /var
         --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
         --ro-bind "$HOME/.config" "$HOME/.config"
