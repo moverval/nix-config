@@ -17,6 +17,8 @@
         --unshare-pid
         --dir /
         --tmpfs /tmp
+        --tmpfs /run
+        --dir /run/user/$(id -u)
         --ro-bind /nix /nix
         --ro-bind /usr /usr
         --ro-bind /etc /etc
@@ -219,7 +221,7 @@ EOF
 
       exec ${pkgs.bubblewrap}/bin/bwrap \
         "''${BWRAP_ARGS[@]}" \
-        ${pkgs.bashInteractive}/bin/bash --norc
+        ${pkgs.bashInteractive}/bin/bash --rcfile <(echo "source ~/.bashrc; PS1='$NEW_PS1'")
       '')
     ];
 
