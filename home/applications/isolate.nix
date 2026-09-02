@@ -18,12 +18,12 @@
         --dir /
         --tmpfs /tmp
         --tmpfs /run
+        --proc /proc
         --dir /run/user/$(id -u)
         --ro-bind /nix /nix
         --ro-bind /usr /usr
         --ro-bind /etc /etc
-        --ro-bind /sys /sys
-        --ro-bind /proc /proc
+        --dir /sys
         --ro-bind /var /var
         --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
         --ro-bind "$HOME/.config" "$HOME/.config"
@@ -47,13 +47,19 @@
         case "$1" in
           -h|--help)
             cat <<EOF
-Isolate:
+Isolates current folder, so it is safe to execute unknown scripts or AI
 
--b <path> or --bind <path>
+-m <path> or --mount <path>
   expose a writeable path
 
--rb <path> or --ro-bind <path>
+-mr <path> or --ro-mount <path>
   expose a readonly path
+
+--bind <host-path> <child-path>
+  bind a host path
+
+--ro-bind <host-path> <child-path>
+  bind a readonly host path
 
 --pi
   add pi content
@@ -78,14 +84,16 @@ Isolate:
   pipewire and pulseaudio support
   Unsafe: Screenshots and noise audio
 
--x11
+--unsafe-x11
   x11 fallback support
   Unsafe: Remote Execution
 
--k or --bus or --keyring
-  desktop support
-  keyring support
-  Unsafe: Remote Execution
+--unsafe-bus
+  host bus support
+  Unsafe: Remote Execution because of full access to host system
+
+--bus or -b
+  bus support with sandboxed bus
 
 PI Environment:
 
@@ -93,11 +101,20 @@ PI Environment:
 
 Firefox Environment:
 
-  isolate -k -g -a
+  isolate -g -a -b --firefox
+
+  Exposes wayland (-g), pipewire and pulseaudio (-a) and a sandboxed bus (-b)
+  with an empty firefox config (--firefox)
 
 Rust Environment:
 
   isolate --cargo
+
+Keepassxc and Secret Service:
+
+  isolate -b --keepass
+
+  Secret Service runs over the bus
 EOF
             exit 0
             shift
@@ -130,7 +147,13 @@ EOF
             )
             shift
             ;;
-          -k|--bus|--keyring)
+          --firefox)
+            BWRAP_ARGS+=(
+              --tmpfs "$HOME/.config/mozilla"
+            )
+            shift
+            ;;
+          --unsafe-bus)
             if [ -n "$DBUS_SESSION_BUS_ADDRESS" ]; then
               DBUS_PATH=$(echo "$DBUS_SESSION_BUS_ADDRESS" | sed -r 's/.*path=([^,]*).*/\1/')
               if [ -S "$DBUS_PATH" ]; then
@@ -138,6 +161,18 @@ EOF
                   --bind "$DBUS_PATH" "$DBUS_PATH"
                   --setenv DBUS_SESSION_BUS_ADDRESS "$DBUS_SESSION_BUS_ADDRESS"
                 )              
+              fi
+            fi
+            shift
+            ;;
+          -b|--bus)
+            if [ -n "$DBUS_SESSION_BUS_ADDRESS" ]; then
+              DBUS_PATH=$(echo "$DBUS_SESSION_BUS_ADDRESS" | sed -r 's/.*path=([^,]*).*/\1/')
+              if [ -S "$DBUS_PATH" ]; then
+                BWRAP_ARGS+=(
+                  --bind-try "/run/user/$(id -u)/bus-sandbox" "$DBUS_PATH"
+                  --setenv DBUS_SESSION_BUS_ADDRESS "$DBUS_SESSION_BUS_ADDRESS"
+                )
               fi
             fi
             shift
@@ -169,10 +204,15 @@ EOF
               --bind "/run/user/$(id -u)/$WAYLAND_DISPLAY" "/run/user/$(id -u)/$WAYLAND_DISPLAY"
               --dev-bind-try /dev/dri /dev/dri
               --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
+              --ro-bind /sys/dev /sys/dev
+              --ro-bind /sys/devices /sys/devices
+              --ro-bind /sys/class /sys/class
+              --ro-bind-try /run/opengl-driver /run/opengl-driver
+              --ro-bind-try /run/opengl-driver-32 /run/opengl-driver-32
             )
             shift
             ;;
-          -x11)
+          --unsafe-x11)
             BWRAP_ARGS+=(
               --ro-bind-try /tmp/.X11-unix /tmp/.X11-unix \
               --ro-bind-try ~/.Xauthority ~/.Xauthority \
@@ -181,7 +221,7 @@ EOF
              )
              shift
              ;;
-          -b|--bind)
+          -m|--mount)
             if [ -z "$2" ]; then
               echo "'$2' not a folder"
               return 1
@@ -195,26 +235,64 @@ EOF
 
             shift 2
             ;;
-            -rb|--ro-bind)
+          -mr|--ro-mount)
+              if [ -z "$2" ]; then
+                echo "'$2' not a folder"
+                return 1
+              fi
+
+              mkdir -p "$2"
+
+              BWRAP_ARGS+=(
+                --ro-bind "$2" "$2"
+              )
+
+              shift 2
+              ;;
+          --bind)
             if [ -z "$2" ]; then
               echo "'$2' not a folder"
+              return 1
+            fi
+
+            if [ -z "$3" ]; then
+              echo "'$3' not a folder"
               return 1
             fi
 
             mkdir -p "$2"
 
             BWRAP_ARGS+=(
-              --ro-bind "$2" "$2"
+              --bind "$2" "$3"
             )
 
-            shift 2
+            shift 3
             ;;
-          *)
-          echo "Unknown option: '$1'"
-          echo "See 'isolate --help' for help"
-          exit 1
-          shift
-          ;;
+          --ro-bind)
+              if [ -z "$2" ]; then
+                echo "'$2' not a folder"
+                return 1
+              fi
+
+              if [ -z "$3" ]; then
+                echo "'$3' not a folder"
+                return 1
+              fi
+
+              mkdir -p "$2"
+
+              BWRAP_ARGS+=(
+                --ro-bind "$2" "$3"
+              )
+
+              shift 3
+              ;;
+            *)
+              echo "Unknown option: '$1'"
+              echo "See 'isolate --help' for help"
+              exit 1
+              shift
+              ;;
         esac
 
       done
@@ -235,8 +313,11 @@ EOF
           ${pkgs.xdg-dbus-proxy}/bin/xdg-dbus-proxy \
             unix:path=%t/bus %t/bus-sandbox --filter \
             --talk=org.freedesktop.Notifications \
+            --talk=org.freedesktop.portal.Secret \
+            --talk=org.freedesktop.portal.Documents \
+            --talk=org.freedesktop.portal.Desktop \
             --talk=org.gtk.Settings \
-            --own=org.mpris.MediaPlayer2.*
+            --talk=org.ally.Bus
           '';
           Restart = "on-failure";
       };
