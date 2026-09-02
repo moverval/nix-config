@@ -1,6 +1,7 @@
-import Quickshell // for PanelWindow
+import Quickshell
 import Quickshell.Wayland
-import QtQuick // for Text
+import QtQuick
+import QtQuick.Layouts
 
 import "config.js" as Config
 
@@ -8,35 +9,62 @@ PanelWindow {
     id: root
     anchors {
         left: true
-        bottom: true
+        top: true
         right: true
     }
+    margins {
+        top: 16
+    }
+    exclusiveZone: 0
+    implicitHeight: 64
     color: "transparent"
-    implicitHeight: 30
 
     Rectangle {
-        id: bottomPanel
-        anchors.centerIn: parent
-        width: 250
-        height: 30
-        color: Config.colors.background
-        topLeftRadius: 15
-        topRightRadius: 15
+        id: bar
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        width: 260
+        height: 56
+        radius: 20
+        color: Config.colors.bg
+        border.color: Config.colors.border
+        border.width: 1
 
-        Rectangle {
-            color: "transparent"
+        ColumnLayout {
+            anchors.centerIn: parent
+            spacing: 0
 
-            anchors {
-                left: parent.left
-                right: parent.right
-                top: parent.top
-                bottom: parent.bottom
-            }
             Text {
-                anchors.centerIn: bottomPanel
-                text: "Hello World"
-                color: "white"
+                id: clockText
+                Layout.alignment: Qt.AlignHCenter
+                text: Qt.formatTime(new Date(), "hh:mm")
+                color: Config.colors.fg
+                font.family: "monospace"
+                font.pixelSize: 26
+                font.weight: Font.Bold
+                renderType: Text.NativeRendering
             }
+
+            Text {
+                id: dateText
+                Layout.alignment: Qt.AlignHCenter
+                text: Qt.formatDate(new Date(), "dddd, dd. MMMM")
+                color: Config.colors.dim
+                font.family: "monospace"
+                font.pixelSize: 11
+                font.weight: Font.Medium
+                renderType: Text.NativeRendering
+            }
+        }
+    }
+
+    Timer {
+        interval: 1000
+        running: true
+        repeat: true
+        onTriggered: {
+            clockText.text = Qt.formatTime(new Date(), "hh:mm")
+            dateText.text = Qt.formatDate(new Date(), "dddd, dd. MMMM")
         }
     }
 }

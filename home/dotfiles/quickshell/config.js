@@ -1,3 +1,7 @@
 const colors = {
-  background: "#252525",
+  bg: "#ee282828",
+  fg: "#ebdbb2",
+  dim: "#a89984",
+  border: "#665c54",
+  accent: "#fabd2f",
 };
