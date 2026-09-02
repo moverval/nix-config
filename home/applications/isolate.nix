@@ -9,8 +9,13 @@
 
       FOLDER_NAME=$(basename "$TARGET_DIR")
 
-      CURRENT_PS1="\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\] "
-      NEW_PS1="\n\[\033[1;35m\]($FOLDER_NAME)\[\033[1;32m\] $CURRENT_PS1"
+      if [ -z "$ISOLATE_PS1" ]; then
+        ISOLATE_PS1="\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\] "
+      fi
+
+      ISOLATE_PS1="\[\033[1;35m\]($FOLDER_NAME)\[\033[1;32m\] $ISOLATE_PS1"
+     
+      NEW_PS1="\n$ISOLATE_PS1"
 
       BWRAP_ARGS=(
         --unshare-user-try
@@ -20,6 +25,7 @@
         --tmpfs /tmp
         --tmpfs /run
         --proc /proc
+        --tmpfs $HOME
         --dir /run/user/$(id -u)
         --ro-bind /nix /nix
         --ro-bind /usr /usr
@@ -30,7 +36,7 @@
         --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
         --ro-bind "$HOME/.config" "$HOME/.config"
         --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
-        --ro-bind-try "$HOME/.bashrc" "$HOME/.bashrc"
+        --file 4 "$HOME/.bashrc"
         --ro-bind "$HOME/.local" "$HOME/.local"
         --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
         --dev /dev
@@ -289,6 +295,11 @@ EOF
 
               shift 3
               ;;
+            --remove-bashrcs)
+              rm -r /run/user/$(id -u)/isolate_script
+              exit 0
+              shift
+              ;;
             *)
               echo "Unknown option: '$1'"
               echo "See 'isolate --help' for help"
@@ -301,7 +312,8 @@ EOF
 
       exec ${pkgs.bubblewrap}/bin/bwrap \
         "''${BWRAP_ARGS[@]}" \
-        ${pkgs.bashInteractive}/bin/bash --rcfile <(echo "source ~/.bashrc; PS1='$NEW_PS1'")
+        ${pkgs.bashInteractive}/bin/bash \
+          4< <(cat $HOME/.bashrc; echo "PS1='$NEW_PS1'"; echo "export ISOLATE_PS1='$ISOLATE_PS1'")
       '')
     ];
 
