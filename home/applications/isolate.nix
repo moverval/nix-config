@@ -43,7 +43,7 @@
       while [[ $# -gt 0 ]]; do
 
         case "$1" in
-          --help)
+          -h|--help)
             cat <<EOF
 Isolate:
 
@@ -65,9 +65,6 @@ Isolate:
 --bun
   add bun content
 
---keyring
-  add keyring support
-
 --keepass
   add keepassxc support
 
@@ -83,8 +80,9 @@ Isolate:
   x11 fallback support
   Unsafe: Remote Execution
 
--b or --bus
+-k or --bus or --keyring
   desktop support
+  keyring support
   Unsafe: Remote Execution
 
 PI Environment:
@@ -93,7 +91,7 @@ PI Environment:
 
 Firefox Environment:
 
-  isolate -g -a -b
+  isolate -k -g -a
 
 Rust Environment:
 
@@ -130,7 +128,7 @@ EOF
             )
             shift
             ;;
-          --keyring)
+          -k|--bus|--keyring)
             if [ -n "$DBUS_SESSION_BUS_ADDRESS" ]; then
               DBUS_PATH=$(echo "$DBUS_SESSION_BUS_ADDRESS" | sed -r 's/.*path=([^,]*).*/\1/')
               if [ -S "$DBUS_PATH" ]; then
@@ -143,25 +141,15 @@ EOF
             shift
             ;;
           --keepass)
-            if [ -z "$XDG_RUNTIME_DIR" ]; then
-              KP_SOCKET="/run/user/$(id -u)/app/org.keepassxc.KeePassXC"
-            fi
+            KP_SOCKET="/run/user/$(id -u)/app/org.keepassxc.KeePassXC"
+            BWRAP_ARGS+=( 
+              --bind-try "$KP_SOCKET" "$KP_SOCKET"
+            )
 
-            if [ -S "$KP_SOCKET" ]; then
-              BWRAP_ARGS+=( 
-                --bind "$KP_SOCKET" "$KP_SOCKET"
-              )
-            fi
-
-            if [ -z "$XDG_RUNTIME_DIR" ]; then
-              KP_SOCKET="/run/user/$(id -u)/org.keepassxc.KeePassXC.BrowserServer"
-            fi
-
-            if [ -S "$KP_SOCKET" ]; then
-              BWRAP_ARGS+=( 
-                --bind "$KP_SOCKET" "$KP_SOCKET"
-              )
-            fi
+            KP_SOCKET="/run/user/$(id -u)/org.keepassxc.KeePassXC.BrowserServer"
+            BWRAP_ARGS+=( 
+              --bind-try "$KP_SOCKET" "$KP_SOCKET"
+            )
             shift
             ;;
           -a|--audio)
@@ -179,13 +167,6 @@ EOF
               --bind "/run/user/$(id -u)/$WAYLAND_DISPLAY" "/run/user/$(id -u)/$WAYLAND_DISPLAY"
               --dev-bind-try /dev/dri /dev/dri
               --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
-            )
-            shift
-            ;;
-          -b|--bus)
-            BWRAP_ARGS+=(
-              --ro-bind-try /run/dbus /run/dbus              
-              --bind-try /run/user/$(id -u)/bus /run/user/$(id -u)/bus
             )
             shift
             ;;
