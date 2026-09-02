@@ -37,12 +37,11 @@
         --ro-bind "$HOME/.config" "$HOME/.config"
         --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
         --file 4 "$HOME/.bashrc"
-        --ro-bind "$HOME/.local" "$HOME/.local"
+        --overlay-src "$HOME/.local" --tmp-overlay "$HOME/.local"
         --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
         --dev /dev
         --setenv PATH "$PATH"
         --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
-        --setenv PS1 "$NEW_PS1"
         --unsetenv DISPLAY
         --unsetenv WAYLAND_DISPLAY
         --unsetenv DBUS_SESSION_BUS_ADDRESS
