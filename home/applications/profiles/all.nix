@@ -1,8 +1,6 @@
 { pkgs, ... }: {
   imports = [
     ./base.nix
-    # Neovim editor with config
-    ../neovim.nix
     # Steam with sandboxing
     ../steam.nix
     ../heroic.nix

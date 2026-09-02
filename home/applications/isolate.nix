@@ -316,6 +316,12 @@ EOF
       '')
     ];
 
+    programs.bash = {
+      bashrcExtra = ''
+        alias i='isolate'
+      '';
+    };
+
     systemd.user.services.dbus-proxy-sandbox = {
       Unit = {
         Description = "Filtered D-Bus proxy for sandboxed apps";

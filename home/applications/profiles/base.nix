@@ -2,6 +2,7 @@
   imports = [
     ../git.nix
     ../yazi.nix
+    ../../config.nix
   ];
 
   # Each base package should have a reason why it stands here
