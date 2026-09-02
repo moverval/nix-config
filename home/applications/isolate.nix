@@ -13,26 +13,29 @@
       NEW_PS1="\n\[\033[1;35m\]($FOLDER_NAME)\[\033[1;32m\] $CURRENT_PS1"
 
       BWRAP_ARGS=(
-        --unshare-user
+        --unshare-user-try
+        --unshare-pid
         --dir /
-        --bind /run /run
-        --bind /tmp /tmp
+        --tmpfs /tmp
         --ro-bind /nix /nix
         --ro-bind /usr /usr
         --ro-bind /etc /etc
         --ro-bind /sys /sys
         --ro-bind /proc /proc
         --ro-bind /var /var
-        --ro-bind "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
+        --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
         --ro-bind "$HOME/.config" "$HOME/.config"
-        --ro-bind "$HOME/.bash_profile" "$HOME/.bash_profile"
-        --ro-bind "$HOME/.bashrc" "$HOME/.bashrc"
+        --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
+        --ro-bind-try "$HOME/.bashrc" "$HOME/.bashrc"
         --ro-bind "$HOME/.local" "$HOME/.local"
-        --ro-bind "$HOME/.gitconfig" "$HOME/.gitconfig"
+        --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
         --dev /dev
         --setenv PATH "$PATH"
         --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
         --setenv PS1 "$NEW_PS1"
+        --unsetenv DISPLAY
+        --unsetenv WAYLAND_DISPLAY
+        --unsetenv DBUS_SESSION_BUS_ADDRESS
         --bind "$TARGET_DIR" "$TARGET_DIR"
         --chdir "$TARGET_DIR"
       )
@@ -67,6 +70,34 @@ Isolate:
 
 --keepass
   add keepassxc support
+
+-g or --graphical
+  wayland support
+  Unsafe: Keylogger
+
+-a or --audio
+  pipewire and pulseaudio support
+  Unsafe: Screenshots and noise audio
+
+-x11
+  x11 fallback support
+  Unsafe: Remote Execution
+
+-b or --bus
+  desktop support
+  Unsafe: Remote Execution
+
+PI Environment:
+
+  isolate --pi
+
+Firefox Environment:
+
+  isolate -g -a -b
+
+Rust Environment:
+
+  isolate --cargo
 EOF
             exit 0
             shift
@@ -133,6 +164,40 @@ EOF
             fi
             shift
             ;;
+          -a|--audio)
+            BWRAP_ARGS+=(
+              --bind "/run/user/$(id -u)/pipewire-0" "/run/user/$(id -u)/pipewire-0"
+              --bind "/run/user/$(id -u)/pulse" "/run/user/$(id -u)/pulse"
+            )
+            shift
+            ;;
+          -g|--graphical)
+            if [ -z "$WAYLAND_DISPLAY" ]; then
+              WAYLAND_DISPLAY="wayland-0"
+            fi
+            BWRAP_ARGS+=(
+              --bind "/run/user/$(id -u)/$WAYLAND_DISPLAY" "/run/user/$(id -u)/$WAYLAND_DISPLAY"
+              --dev-bind-try /dev/dri /dev/dri
+              --setenv WAYLAND_DISPLAY "$WAYLAND_DISPLAY"
+            )
+            shift
+            ;;
+          -b|--bus)
+            BWRAP_ARGS+=(
+              --ro-bind-try /run/dbus /run/dbus              
+              --bind-try /run/user/$(id -u)/bus /run/user/$(id -u)/bus
+            )
+            shift
+            ;;
+          -x11)
+            BWRAP_ARGS+=(
+              --ro-bind-try /tmp/.X11-unix /tmp/.X11-unix \
+              --ro-bind-try ~/.Xauthority ~/.Xauthority \
+              --setenv DISPLAY "$DISPLAY"
+              --setenv XAUTHORITY "$XAUTHORITY"
+             )
+             shift
+             ;;
           -b|--bind)
             if [ -z "$2" ]; then
               echo "'$2' not a folder"
@@ -176,4 +241,22 @@ EOF
         ${pkgs.bashInteractive}/bin/bash --norc
       '')
     ];
-}
+
+    systemd.user.services.dbus-proxy-sandbox = {
+      Unit = {
+        Description = "Filtered D-Bus proxy for sandboxed apps";
+        After = [ "dbus.service" ];
+      };
+      Service = {
+        ExecStart = ''
+          ${pkgs.xdg-dbus-proxy}/bin/xdg-dbus-proxy \
+            unix:path=%t/bus %t/bus-sandbox --filter \
+            --talk=org.freedesktop.Notifications \
+            --talk=org.gtk.Settings \
+            --own=org.mpris.MediaPlayer2.*
+          '';
+          Restart = "on-failure";
+      };
+      Install.WantedBy = [ "default.target" ];
+   };
+ }
