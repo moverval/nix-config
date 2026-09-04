@@ -35,6 +35,7 @@
         --ro-bind /var /var
         --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
         --ro-bind "$HOME/.config" "$HOME/.config"
+        --ro-bind "$HOME/config" "$HOME/config"
         --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
         --file 4 "$HOME/.bashrc"
         --overlay-src "$HOME/.local" --tmp-overlay "$HOME/.local"

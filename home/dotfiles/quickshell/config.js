@@ -1,7 +1,13 @@
 const colors = {
-  bg: "#ee282828",
-  fg: "#ebdbb2",
-  dim: "#a89984",
-  border: "#665c54",
-  accent: "#fabd2f",
+  bg: {
+    dark: "#20000000",
+    light: "#20ffffff",
+  },
+  fg: {
+    primary: "#eee",
+    secondary: "#ddd",
+    red: "#eeaaaa",
+  }
 };
+
+const font = "Roboto";

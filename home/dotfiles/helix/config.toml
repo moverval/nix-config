@@ -1,5 +1,8 @@
 theme = "gruvbox_material_dark_soft"
 
+[editor.soft-wrap]
+enable = true
+
 [editor.cursor-shape]
 normal = "block"
 insert = "bar"

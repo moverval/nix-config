@@ -4,6 +4,7 @@ hl.on("hyprland.start", function ()
 
     -- Load your default animated or static wallpaper
     hl.exec_cmd("sleep 0.5 && awww img /Pictures/wallpapers/01/03.png")
+    hl.exec_cmd("quickshell")
 end)
 
 -- This is an example Hyprland Lua config file.
@@ -58,6 +59,13 @@ local fileManager = "thunar"
 local menu        = "hyprlauncher"
 local screenshot = "grim -g \"$(slurp)\" - | swappy -f -"
 
+-- Blur für Quickshell aktivieren
+hl.layer_rule({
+    match = { namespace = "quickshell" },
+    blur = true,
+    ignore_alpha = 0.0,
+    -- xray = true,
+})
 
 -------------------
 ---- AUTOSTART ----
@@ -125,8 +133,8 @@ hl.config({
         col = {
             -- active_border   = { colors = {"rgba(33ccffee)", "rgba(00ff99ee)"}, angle = 45 },
             -- active_border = { colors = {"rgba(0066ffee)", "rgba(3b82f6ee)", "rgba(8a2be2ee)"}, angle = 45 },
-            active_border = { colors = {"rgba(eeeeee50)"}, angle = 45 },
-            inactive_border = "rgba(59595900)",
+            active_border = { colors = {"rgba(eeeeee40)"}, angle = 45 },
+            inactive_border = "rgba(00000000)",
         },
 
         -- Set to true to enable resizing windows by clicking and dragging on borders and gaps
@@ -157,15 +165,29 @@ hl.config({
         --     passes    = 1,
         --     vibrancy  = 0.1696,
         -- },
-        active_opacity = 0.95,
-        inactive_opacity = 0.9,
+        active_opacity = 0.90,
+        inactive_opacity = 0.8,
 
+        -- blur = {
+        --     enabled = true,
+        --     size = 8,
+        --     passes = 3,
+        --     ignore_opacity = true, -- Keeps the background blurred even at low opacities
+        -- },
+        --
+        
         blur = {
             enabled = true,
-            size = 8,
-            passes = 3,
-            ignore_opacity = true, -- Keeps the background blurred even at low opacities
-        },
+            size = 3,           -- Höherer Radius für ein weicheres, feineres Glas
+            passes = 3,          -- Mehr Durchgänge erzeugen tiefe Milchglas-Optik
+            new_optimizations = true,
+            
+            -- Aussehen veredeln (Glassmorphism):
+            contrast = 1.5,      -- Hebt Elemente hinter dem Glas optisch hervor
+            brightness = 1.1,    -- Behält die originale Helligkeit bei
+            vibrancy = 0.25,     -- Lässt die Farben des Hintergrundbilds leuchten
+            -- noise = 0.02,        -- Ganz feine Körnung für realistisches "Frosted Glass"
+        }
     },
 
     animations = {

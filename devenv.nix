@@ -16,6 +16,8 @@
   # Install nixd alongside nil so either language server is available in the shell.
   packages = [
     pkgs.nixd
+    pkgs.kdePackages.qtdeclarative
+    pkgs.quickshell
   ];
 
   # See full reference at https://devenv.sh/reference/options/
