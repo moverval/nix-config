@@ -1,3 +1,6 @@
 set default-bg "rgba(0, 0, 0, 0.1)"
 set statusbar-bg "#32302f"
 set guioptions none
+set font "FiraCode Nerd Font 12"
+
+set recolor true

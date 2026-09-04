@@ -59,7 +59,6 @@ local fileManager = "thunar"
 local menu        = "hyprlauncher"
 local screenshot = "grim -g \"$(slurp)\" - | swappy -f -"
 
--- Blur für Quickshell aktivieren
 hl.layer_rule({
     match = { namespace = "quickshell" },
     blur = true,
@@ -126,7 +125,7 @@ hl.config({
     },
     general = {
         gaps_in  = 5,
-        gaps_out = 20,
+        gaps_out = 15,
 
         border_size = 1,
 
@@ -165,8 +164,8 @@ hl.config({
         --     passes    = 1,
         --     vibrancy  = 0.1696,
         -- },
-        active_opacity = 0.90,
-        inactive_opacity = 0.8,
+        active_opacity = 0.95,
+        inactive_opacity = 0.85,
 
         -- blur = {
         --     enabled = true,
