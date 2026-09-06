@@ -17,6 +17,8 @@
      
       NEW_PS1="\n$ISOLATE_PS1"
 
+      COMMAND="bash"
+
       BWRAP_ARGS=(
         --unshare-user-try
         --unshare-pid
@@ -69,6 +71,9 @@ Isolates current folder, so it is safe to execute unknown scripts or AI
 --ro-bind <host-path> <child-path>
   bind a readonly host path
 
+--o-bind <host-path> <child-path>
+  overlay bind a host path
+
 --pi
   add pi content
 
@@ -102,6 +107,9 @@ Isolates current folder, so it is safe to execute unknown scripts or AI
 
 --bus or -b
   bus support with sandboxed bus
+
+-c <command> or --command <command>
+  run command, default bash
 
 PI Environment:
 
@@ -295,10 +303,28 @@ EOF
 
               shift 3
               ;;
-            --remove-bashrcs)
-              rm -r /run/user/$(id -u)/isolate_script
-              exit 0
-              shift
+            --o-bind)
+              if [ -z "$2" ]; then
+                echo "'$2' not a folder"
+                return 1
+              fi
+
+              if [ -z "$3" ]; then
+                echo "'$3' not a folder"
+                return 1
+              fi
+
+              mkdir -p "$2"
+
+              BWRAP_ARGS+=(
+                --overlay-src $2 --tmp-overlay $3
+              )
+
+              shift 3
+              ;;
+            -c|--command)
+              COMMAND="$2"
+              shift 2
               ;;
             *)
               echo "Unknown option: '$1'"
@@ -312,7 +338,7 @@ EOF
 
       exec ${pkgs.bubblewrap}/bin/bwrap \
         "''${BWRAP_ARGS[@]}" \
-        ${pkgs.bashInteractive}/bin/bash \
+        $COMMAND \
           4< <(cat $HOME/.bashrc; echo "PS1='$NEW_PS1'"; echo "export ISOLATE_PS1='$ISOLATE_PS1'")
       '')
     ];

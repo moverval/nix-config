@@ -32,18 +32,24 @@ hl.monitor({
 })
 
 hl.monitor({
-    output = "DP-1",
+    output = "desc:Samsung Electric Company C49HG9x H4ZT400292",
     position = "0x0",
     mode = "3840x1080@144.00Hz",
     supports_hdr = 1,
     bitdepth = 10,
-    -- cm = "hdr",
-    -- sdrbrightness = 3.0,
-    -- sdrsaturation = 1.2,
-})
+    -- cm = "hdredid",
+    -- sdrbrightness = 2,
+    -- sdrsaturation = 1,
+    -- min_luminance = 0,
+    -- max_luminance = 400,
+    -- sdr_eotf = "srgb",
+
+    -- sdr_min_luminance = 0.005,
+    -- sdr_max_luminance = 200,
+    })
 
 hl.monitor({
-    output = "DP-3",
+    output = "desc:AOC 27G1G4 0x000109B3",
     position = "960x-1080",
     mode = "1920x1080@119.88Hz",
     -- mode = "1920x1080@60.00Hz",
@@ -143,6 +149,9 @@ hl.config({
         allow_tearing = false,
 
         layout = "scrolling",
+    },
+    render = {
+        use_fp16 = 2,
     },
 
     decoration = {
