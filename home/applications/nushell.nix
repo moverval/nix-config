@@ -1,4 +1,7 @@
-{ ... }: {
+{ pkgs, ... }: {
+  home.packages = [
+    pkgs.nushellPlugins.polars
+  ];
   programs = {
     nushell = {
       enable = true;
@@ -40,6 +43,8 @@
               cd $cwd
           }
       }
+
+      plugin add ${pkgs.nushellPlugins.polars}/bin/nu_plugin_polars
       '';
        shellAliases = {
          ll = "ls -l";
