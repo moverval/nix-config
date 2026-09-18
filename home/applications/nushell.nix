@@ -56,12 +56,22 @@
        enable = true;
        settings = {
          format = "$directory\${custom.isolate}$all$character";
-         custom.isolate = {
-           command = "echo $env.ISOLATION";
-           when = "$env | get ISOLATION";
-          format = "[$symbol](red) [$output](bold) ";
-           symbol = "⎇";
+         custom = {
+          isolate = {
+            command = "sh -c 'echo $ISOLATION'";
+            when = "sh -c '[ -v ISOLATION ]'";
+            format = "[$symbol](red) [$output](bold) ";
+            symbol = "⎇";
+          };
+          bash = {
+            command = "echo $STARSHIP_SHELL";
+            when = "sh -c '[ $STARSHIP_SHELL != \"nu\" ]'";
+            format = "$symbol [$output]($style) ";
+            style = "bold";
+            symbol = "🐚";
+          };
          };
+
          add_newline = true;
          character = { 
          success_symbol = "[➜](bold green)";
@@ -69,16 +79,5 @@
        };
       };
     };
-
-  bash = {
-    enable = true;
-    bashrcExtra = ''
-      PS1='\n\[\e[01;32m\]\u\[\e[00m\]@\[\e[01;36m\]\h\[\e[00m\]:\[\e[01;33m\]\w\[\e[00m\] \$ '
-
-      if [ -t 0 ] && command -v zsh >/dev/null 2>&1; then
-        exec nu
-      fi
-      '';
-  };
   };
 }

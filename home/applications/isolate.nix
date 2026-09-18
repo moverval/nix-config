@@ -9,12 +9,10 @@
 
       FOLDER_NAME=$(basename "$TARGET_DIR")
 
-      if [ -z "$ISOLATE_PS1" ]; then
-        ISOLATE_PS1='\[\e[01;32m\]\u\[\e[00m\]@\[\e[01;36m\]\h\[\e[00m\]:\[\e[01;33m\]\w\[\e[00m\] \$ '
-        # ISOLATE_PS1="\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\] "
-      fi
-     
-      COMMAND="bash"
+      CURRENT_SHELL=$(ps -o comm= -p $PPID)     
+      SHELL_PATH=$(which "$CURRENT_SHELL" 2>/dev/null || echo "/bin/sh")
+      COMMAND="$SHELL_PATH"
+      BASIC=0
 
       BWRAP_ARGS=(
         --unshare-user-try
@@ -24,6 +22,7 @@
         --tmpfs /tmp
         --tmpfs /run
         --proc /proc
+        --dev /dev
         --tmpfs $HOME
         --dir /run/user/$(id -u)
         --ro-bind /nix /nix
@@ -37,17 +36,11 @@
         # --ro-bind "$HOME/config" "$HOME/config"
         # --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
         # --file 4 "$HOME/.bashrc"
-        --overlay-src "$HOME" --tmp-overlay "$HOME"
-        --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
-        --dev /dev
-        --setenv PATH "$PATH"
         --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
         --setenv ISOLATION "$FOLDER_NAME"
         --unsetenv DISPLAY
         --unsetenv WAYLAND_DISPLAY
         --unsetenv DBUS_SESSION_BUS_ADDRESS
-        --bind "$TARGET_DIR" "$TARGET_DIR"
-        --chdir "$TARGET_DIR"
       )
 
       while [[ $# -gt 0 ]]; do
@@ -56,6 +49,9 @@
           -h|--help)
             cat <<EOF
 Isolates current folder, so it is safe to execute unknown scripts or AI
+
+--basic
+  Remove home directory read access
 
 -m <path> or --mount <path>
   expose a writeable path
@@ -131,6 +127,10 @@ Keepassxc and Secret Service:
   Secret Service runs over the bus
 EOF
             exit 0
+            shift
+            ;;
+          --basic)
+            BASIC=1
             shift
             ;;
           --pi)
@@ -333,6 +333,18 @@ EOF
         esac
 
       done
+
+      if [ $BASIC = 0 ]; then
+        BWRAP_ARGS+=(
+          --overlay-src "$HOME" --tmp-overlay "$HOME"
+          --setenv PATH "$PATH"
+        )
+      fi
+
+      BWRAP_ARGS+=(
+        --bind "$TARGET_DIR" "$TARGET_DIR"
+        --chdir "$TARGET_DIR"
+      )
 
       exec ${pkgs.bubblewrap}/bin/bwrap \
         "''${BWRAP_ARGS[@]}" \
