@@ -1,0 +1,84 @@
+{ ... }: {
+  programs = {
+    nushell = {
+      enable = true;
+      configFile.source = ./../dotfiles/nushell/config.nu;
+      extraConfig = ''
+       let carapace_completer = {|spans|
+       carapace $spans.0 nushell ...$spans | from json
+       }
+       $env.config = {
+        show_banner: false,
+        completions: {
+        case_sensitive: false # case-sensitive completions
+        quick: true    # set to false to prevent auto-selecting completions
+        partial: true    # set to false to prevent partial filling of the prompt
+        algorithm: "fuzzy"    # prefix or fuzzy
+        external: {
+        # set to false to prevent nushell looking into $env.PATH to find more suggestions
+            enable: true 
+        # set to lower can improve completion performance at the cost of omitting some options
+            max_results: 100 
+            completer: $carapace_completer # check 'carapace_completer' 
+          }
+        }
+       } 
+       $env.PATH = ($env.PATH | 
+       split row (char esep) |
+       prepend /home/myuser/.apps |
+       append /usr/bin/env
+       )
+
+       
+      def --env y [...args] {
+          let tmp = (mktemp -t "yazi-cwd.XXXXXX")
+          yazi ...$args --cwd-file $tmp
+          let cwd = (open $tmp | str trim)
+          rm -f $tmp
+
+          if ($cwd != "" and $cwd != $env.PWD and ($cwd | path exists)) {
+              cd $cwd
+          }
+      }
+      '';
+       shellAliases = {
+         ll = "ls -l";
+         i = "isolate";
+         fg = "job unfreeze";
+         zf = "tv zoxide";
+         s = "cd (tv dirs)";
+       };
+     };  
+     carapace.enable = true;
+     carapace.enableNushellIntegration = true;
+
+     starship = {
+       enable = true;
+       settings = {
+         format = "$directory\${custom.isolate}$all$character";
+         custom.isolate = {
+           command = "echo $env.ISOLATION";
+           when = "$env | get ISOLATION";
+          format = "[$symbol](red) [$output](bold) ";
+           symbol = "⎇";
+         };
+         add_newline = true;
+         character = { 
+         success_symbol = "[➜](bold green)";
+         error_symbol = "[➜](bold red)";
+       };
+      };
+    };
+
+  bash = {
+    enable = true;
+    bashrcExtra = ''
+      PS1='\n\[\e[01;32m\]\u\[\e[00m\]@\[\e[01;36m\]\h\[\e[00m\]:\[\e[01;33m\]\w\[\e[00m\] \$ '
+
+      if [ -t 0 ] && command -v zsh >/dev/null 2>&1; then
+        exec nu
+      fi
+      '';
+  };
+  };
+}

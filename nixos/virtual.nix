@@ -1,7 +1,10 @@
 { pkgs, user, ... }: {
   virtualisation.libvirtd = {
     enable = true;
-    qemu.runAsRoot = false;
+    qemu = {
+      runAsRoot = false;
+      package = pkgs.qemu_kvm;
+    };
   };
 
   users.users."${user.name}".extraGroups = [

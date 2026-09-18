@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs-unstable, ... }: {
   imports = [
     ../git.nix
     ../yazi.nix
@@ -6,7 +6,7 @@
   ];
 
   # Each base package should have a reason why it stands here
-  home.packages = with pkgs; [
+  home.packages = with pkgs-unstable; [
     # Terminal
     kitty
     nerd-fonts.fira-code
@@ -42,4 +42,27 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+
+  
+  programs.zsh = {
+    enable = true;
+    enableCompletion = true;
+    autosuggestion.enable = true;
+    syntaxHighlighting.enable = true;
+
+    shellAliases = {
+      ll = "ls -l";
+      h = "hx";
+      i = "isolate";
+    };
+
+    history.size = 10000;
+    history.ignoreAllDups = true;
+    history.path = "$HOME/.zsh_history";
+    history.ignorePatterns = ["rm *" "pkill *" "cp *"];
+    initContent = ''
+      NEWLINE=$'\n'
+      PROMPT=$NEWLINE'%F{green}%n%f@%F{cyan}%m%f:%F{yellow}%~%f %# '        
+    '';
+  };
 }

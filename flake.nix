@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-26.05";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpak.url = "github:nixpak/nixpak/master";
@@ -32,10 +32,10 @@
         location = "/home/moritz";
       };
       homeConfig = {
-        inherit pkgs;
+        pkgs = pkgs-stable;
 
         extraSpecialArgs = {
-          inherit inputs system user;
+          inherit inputs system user pkgs-unstable;
         };
 
         modules = [
@@ -44,10 +44,10 @@
         ];
       };
       homeConfigBase = {
-        inherit pkgs;
+        pkgs = pkgs-stable;
 
         extraSpecialArgs = {
-          inherit inputs user;
+          inherit inputs user pkgs-unstable;
         };
 
         modules = [
@@ -55,7 +55,13 @@
           ./home/applications/profile/base.nix
         ];
       };
-      pkgs = import nixpkgs {
+      pkgs-unstable = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
+      pkgs-stable = import nixpkgs-stable {
         inherit system;
         config = {
           allowUnfree = true;
@@ -73,8 +79,8 @@
               inputs
               system
               user
+              pkgs-unstable
               ;
-            pkgs-unstable = pkgs;
             homeModules = homeModules;
           };
 

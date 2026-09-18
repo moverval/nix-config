@@ -20,8 +20,7 @@
     useGlobalPkgs = false;
     useUserPackages = true;
     extraSpecialArgs = {
-      inherit inputs user;
-      pkgs = pkgs-unstable;
+      inherit inputs user pkgs-unstable;
     };
     users = {
       "${user.name}" = { ... }: {

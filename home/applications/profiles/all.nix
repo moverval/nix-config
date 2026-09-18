@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs-unstable, ... }: {
   imports = [
     ./base.nix
     # Steam with sandboxing
@@ -10,12 +10,16 @@
     ../devenv.nix
     # Isolate Folder Script
     ../isolate.nix
+    # Custom shell config
+    ../nushell.nix
   ];
 
-  programs.zoxide.enable = true;
+  programs.zoxide = {
+    enable = true;
+  };
 
   # Each base package should have a reason why it stands here
-  home.packages = with pkgs; [
+  home.packages = with pkgs-unstable; [
     # For writing pdfs
     typst
     # Language server for writing pdfs
@@ -44,11 +48,13 @@
     # Game compositor
     gamescope
 
-    # AI
-    pi-coding-agent
-
     # Music!
     cliamp
+
+    # For all fuzzy finder
+    television
+    fd
+    bat
 
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
@@ -63,4 +69,19 @@
     #   echo "Hello, ${config.home.username}!"
     # '')
   ];
+
+  programs.bash = {
+    bashrcExtra = ''
+      function ipi() {
+        i --pi -c "pi $@"
+      }
+    '';
+  };
+
+  programs.zsh = {
+    enable = true;
+    initContent = ''
+      eval "$(devenv hook zsh)"
+    '';
+  };
 }

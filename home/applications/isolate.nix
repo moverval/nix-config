@@ -10,13 +10,10 @@
       FOLDER_NAME=$(basename "$TARGET_DIR")
 
       if [ -z "$ISOLATE_PS1" ]; then
-        ISOLATE_PS1="\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\] "
+        ISOLATE_PS1='\[\e[01;32m\]\u\[\e[00m\]@\[\e[01;36m\]\h\[\e[00m\]:\[\e[01;33m\]\w\[\e[00m\] \$ '
+        # ISOLATE_PS1="\[\033[1;32m\][\[\e]0;\u@\h: \w\a\]\u@\h:\w]\$\[\033[0m\] "
       fi
-
-      ISOLATE_PS1="\[\033[1;35m\]($FOLDER_NAME)\[\033[1;32m\] $ISOLATE_PS1"
      
-      NEW_PS1="\n$ISOLATE_PS1"
-
       COMMAND="bash"
 
       BWRAP_ARGS=(
@@ -35,16 +32,17 @@
         --ro-bind /run/wrappers/bin /run/wrappers/bin
         --ro-bind /run/current-system/sw/bin /run/current-system/sw/bin
         --ro-bind /var /var
-        --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
-        --ro-bind "$HOME/.config" "$HOME/.config"
-        --ro-bind "$HOME/config" "$HOME/config"
-        --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
-        --file 4 "$HOME/.bashrc"
-        --overlay-src "$HOME/.local" --tmp-overlay "$HOME/.local"
+        # --ro-bind-try "$HOME/.nix-profile/bin" "$HOME/.nix-profile/bin"
+        # --ro-bind "$HOME/.config" "$HOME/.config"
+        # --ro-bind "$HOME/config" "$HOME/config"
+        # --ro-bind-try "$HOME/.bash_profile" "$HOME/.bash_profile"
+        # --file 4 "$HOME/.bashrc"
+        --overlay-src "$HOME" --tmp-overlay "$HOME"
         --ro-bind-try "$HOME/.gitconfig" "$HOME/.gitconfig"
         --dev /dev
         --setenv PATH "$PATH"
         --setenv XDG_RUNTIME_DIR "$XDG_RUNTIME_DIR"
+        --setenv ISOLATION "$FOLDER_NAME"
         --unsetenv DISPLAY
         --unsetenv WAYLAND_DISPLAY
         --unsetenv DBUS_SESSION_BUS_ADDRESS
@@ -338,8 +336,8 @@ EOF
 
       exec ${pkgs.bubblewrap}/bin/bwrap \
         "''${BWRAP_ARGS[@]}" \
-        $COMMAND \
-          4< <(cat $HOME/.bashrc; echo "PS1='$NEW_PS1'"; echo "export ISOLATE_PS1='$ISOLATE_PS1'")
+        $COMMAND
+          # 4< <(cat $HOME/.bashrc; echo "export ISOLATE='$FOLDER_NAME'")
       '')
     ];
 
