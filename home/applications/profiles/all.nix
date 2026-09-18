@@ -77,11 +77,4 @@
       }
     '';
   };
-
-  programs.zsh = {
-    enable = true;
-    initContent = ''
-      eval "$(devenv hook zsh)"
-    '';
-  };
 }

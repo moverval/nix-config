@@ -11,4 +11,6 @@ in
   home.file.".config/quickshell".source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/quickshell";
   home.file.".config/zathura".source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/zathura";
   home.file.".config/zellij".source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/zellij";
+  home.file.".config/television".source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/television";
+  home.file.".radare2rc".source = config.lib.file.mkOutOfStoreSymlink "${dotfiles}/radare2/radare2rc";
 }
