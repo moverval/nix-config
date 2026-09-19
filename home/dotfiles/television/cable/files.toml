@@ -10,7 +10,7 @@ command = [
 ]
 
 [preview]
-command = "bat -n --color=always '{}'"
+command = "~/.config/television/preview_file.sh '{}'"
 env = { BAT_THEME = "ansi" }
 
 [keybindings]

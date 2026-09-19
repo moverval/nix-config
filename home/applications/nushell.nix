@@ -52,6 +52,7 @@
          fg = "job unfreeze";
          zf = "tv zoxide";
          s = "cd (tv dirs)";
+         wallpaper = "awww img --transition-type center";
        };
      };  
      carapace.enable = true;

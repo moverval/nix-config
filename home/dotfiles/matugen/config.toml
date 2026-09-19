@@ -1,0 +1,17 @@
+[config.wallpaper]
+command = "awww"
+arguments = ["img", "--transition-type", "center"]
+set = true
+
+[templates.kitty]
+input_path = '~/.config/matugen/kitty-template.conf'
+output_path = '~/.config/kitty/base-theme.conf'
+post_hook = 'kitty @ set-colors --all ~/.config/kitty/colors.conf'
+
+[templates.helix]
+input_path = '~/.config/matugen/helix-template.toml'
+output_path = '~/.config/helix/themes/base.conf'
+
+[templates.tv]
+input_path = '~/.config/matugen/tv-template.toml'
+output_path = '~/.config/television/themes/base.toml'
