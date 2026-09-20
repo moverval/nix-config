@@ -1,5 +1,8 @@
 theme = "gruvbox_material_dark_soft"
 
+[editor]
+shell = ["nu", "--stdin", "-c"]
+
 [editor.soft-wrap]
 enable = true
 

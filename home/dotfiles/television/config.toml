@@ -1,2 +1,5 @@
 [ui]
 theme = "gruvbox-material.toml"
+
+[search]
+tiebreak = "length"

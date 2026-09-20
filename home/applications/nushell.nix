@@ -53,6 +53,12 @@
          zf = "tv zoxide";
          s = "cd (tv dirs)";
          wallpaper = "awww img --transition-type center";
+
+         tvgb = "tv git-branch";
+         tvgl = "tv git-log";
+         tvf = "tv files";
+         tvd = "tv dirs";
+         tvz = "tv zoxide";
        };
      };  
      carapace.enable = true;

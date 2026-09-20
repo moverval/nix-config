@@ -71,6 +71,8 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
+    #
+    (import ../../../extra/ai/default.nix { inherit pkgs; })
   ];
 
   programs.bash = {
