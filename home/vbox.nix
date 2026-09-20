@@ -14,11 +14,17 @@ let
       app.package = package;
       bubblewrap = {
         network = true;
+        sockets = {
+          x11 = true;
+          wayland = true;
+          pulse = true;
+        };
 
         bind = {
           rw = [
             location
             "/run"
+            "/tmp"
           ];
 
           ro = [
@@ -27,8 +33,10 @@ let
             "/usr"
             "/etc"
             "/sys"
-            "/tmp/.X11-unix"
             "/proc"
+            "/var"
+            (sloth.concat' sloth.homeDir "/.nix-profile/bin")
+            "/nix/profile/bin"
           ];
 
           dev = [
@@ -37,14 +45,13 @@ let
         };
 
         tmpfs = [
-          "/tmp"
-          "/var"
         ];
 
         env = {
           "HOME" = location;
           "XDG_DATA_HOME" = "${location}/.local/share";
           "XDG_CONFIG_HOME" = "${location}/.config";
+          "PATH" = sloth.env "PATH";
         };
       };
     };

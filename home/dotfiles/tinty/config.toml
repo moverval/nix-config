@@ -1,0 +1,21 @@
+shell = "bash -c '{}'"
+default-cycle-ring = "default"
+default-scheme = "base16-gruvbox"
+
+[[rings]]
+name = "default"
+schemes = ["base16-gruvbox-dark"]
+
+[[items]]
+name = "tinted-helix"
+path = "https://github.com/tinted-theming/tinted-helix"
+themes-dir = "themes"
+hook = "cp -f \"%f\" ~/.config/helix/themes/ && helix --health > /dev/null 2>&1"
+supported-systems = ["tinted8", "base16", "base24"]
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-terminal"
+themes-dir = "themes/kitty"
+hook = "[ -n \"$KITTY_PID\" ] && kill -USR1 \"$KITTY_PID\""
+supported-systems = ["base16", "base24"]

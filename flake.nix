@@ -3,17 +3,23 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:nixos/nixpkgs/nixos-26.05";
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixpak.url = "github:nixpak/nixpak/master";
     impermanence.url = "github:nix-community/impermanence";
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
       self,
+      nixpkgs-stable,
       nixpkgs,
       home-manager,
       ...
@@ -26,10 +32,10 @@
         location = "/home/moritz";
       };
       homeConfig = {
-        inherit pkgs;
+        pkgs = pkgs-stable;
 
         extraSpecialArgs = {
-          inherit inputs user;
+          inherit inputs system user pkgs-unstable;
         };
 
         modules = [
@@ -38,10 +44,10 @@
         ];
       };
       homeConfigBase = {
-        inherit pkgs;
+        pkgs = pkgs-stable;
 
         extraSpecialArgs = {
-          inherit inputs user;
+          inherit inputs user pkgs-unstable;
         };
 
         modules = [
@@ -49,7 +55,13 @@
           ./home/applications/profile/base.nix
         ];
       };
-      pkgs = import nixpkgs {
+      pkgs-unstable = import nixpkgs {
+        inherit system;
+        config = {
+          allowUnfree = true;
+        };
+      };
+      pkgs-stable = import nixpkgs-stable {
         inherit system;
         config = {
           allowUnfree = true;
@@ -61,12 +73,13 @@
           user,
           homeModules,
         }:
-        nixpkgs.lib.nixosSystem {
+        nixpkgs-stable.lib.nixosSystem {
           specialArgs = {
             inherit
               inputs
               system
               user
+              pkgs-unstable
               ;
             homeModules = homeModules;
           };

@@ -5,6 +5,7 @@
 {
   inputs,
   pkgs,
+  pkgs-unstable,
   user,
   homeModules,
   ...
@@ -16,7 +17,11 @@
   ];
 
   home-manager = {
-    extraSpecialArgs = { inherit inputs user; };
+    useGlobalPkgs = false;
+    useUserPackages = true;
+    extraSpecialArgs = {
+      inherit inputs user pkgs-unstable;
+    };
     users = {
       "${user.name}" = { ... }: {
         home.stateVersion = "26.05";
@@ -36,6 +41,12 @@
     "flakes"
   ];
   nix.settings.trusted-users = [ "root" "@wheel" ];
+
+  nix.gc = {
+    automatic = true;
+    dates = "weekly";
+    options = "--delete-older-than 30d";
+  };
 
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";

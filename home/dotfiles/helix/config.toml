@@ -1,0 +1,38 @@
+theme = "gruvbox_material_dark_soft"
+
+[editor]
+shell = ["nu", "--stdin", "-c"]
+
+[editor.soft-wrap]
+enable = true
+
+[editor.cursor-shape]
+normal = "block"
+insert = "bar"
+select = "underline"
+
+[keys.normal]
+"C-Y" = [
+  ":sh rm -f /tmp/hx-yazi-chooser",
+  ":insert-output yazi \"%{buffer_name}\" --chooser-file=/tmp/hx-yazi-chooser",
+  ":sh printf \"\\x1b[?1049h\\x1b[?2004h\" > /dev/tty",
+  ":open %sh{cat /tmp/hx-yazi-chooser}",
+  ":redraw",
+  ":set mouse false",
+  ":set mouse true"
+]
+"C-y" = [
+  ":sh rm -f /tmp/hx-yazi-chooser",
+  ":insert-output yazi --chooser-file=/tmp/hx-yazi-chooser",
+  ":sh printf \"\\x1b[?1049h\\x1b[?2004h\" > /dev/tty",
+  ":open %sh{cat /tmp/hx-yazi-chooser}",
+  ":redraw",
+  ":set mouse false",
+  ":set mouse true"
+]
+"A-g" = [
+  ":new",
+  ":insert-output gitui",
+  ":buffer-close",
+  ":redraw"
+]

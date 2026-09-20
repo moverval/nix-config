@@ -1,21 +1,25 @@
-{ pkgs, ... }: {
+{ pkgs-unstable, ... }: {
   imports = [
     ./base.nix
-    # Neovim editor with config
-    ../neovim.nix
     # Steam with sandboxing
     ../steam.nix
+    ../heroic.nix
     # Virtual machine interface
     ../virt-manager.nix
     # Development
     ../devenv.nix
-    ../ddg_bangs.nix
+    # Isolate Folder Script
+    ../isolate.nix
+    # Custom shell config
+    ../nushell.nix
   ];
 
-  programs.zoxide.enable = true;
+  programs.zoxide = {
+    enable = true;
+  };
 
   # Each base package should have a reason why it stands here
-  home.packages = with pkgs; [
+  home.packages = with pkgs-unstable; [
     # For writing pdfs
     typst
     # Language server for writing pdfs
@@ -32,6 +36,29 @@
     # Recording
     obs-studio
 
+    # Screenshot
+    grim
+    slurp
+    swappy
+    wl-clipboard
+
+    # Terminal manager
+    zellij
+
+    # Game compositor
+    gamescope
+
+    # Music!
+    cliamp
+
+    # For all fuzzy finder
+    television
+    fd
+    bat
+
+    # Dynamic Theming
+    matugen
+
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -44,5 +71,15 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
+    #
+    (import ../../../extra/ai/default.nix { inherit pkgs; })
   ];
+
+  programs.bash = {
+    bashrcExtra = ''
+      function ipi() {
+        i --pi -c "pi $@"
+      }
+    '';
+  };
 }

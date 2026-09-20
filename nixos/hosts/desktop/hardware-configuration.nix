@@ -9,9 +9,86 @@
     ];
 
   boot.initrd.availableKernelModules = [ "nvme" "ahci" "xhci_pci" "usb_storage" "usbhid" "sd_mod" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "amdgpu" ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
+
+  boot.kernelParams = [
+    "amdgpu.ppfeaturemask=0xffffffff"
+    "resume_offset=88155392"
+    "amdgpu.mcbp=0"
+    "iommu=pt"
+  ];
+
+  # The amdgpu driver doesn't manage the gpu temperature curve correctly and destroys the gpu
+  # under high performance because it maintains the fans at
+  # 50% load under 110 degrees. This script starts fans at high load with a continuous curve.
+  systemd.services.amdgpu-fan-curve = {
+    description = "AMD GPU Fan Curve Service";
+    wantedBy = [ "graphical.target" ];
+    after = [ "graphical.target" ];
+
+    path = with pkgs; [ coreutils gnugrep gnused bash bc ];
+
+    script = ''
+    set +e
+
+    HWMON_DIR=""
+    for dir in /sys/class/drm/card1/device/hwmon/hwmon*; do
+      if [ -d "$dir" ]; then
+        HWMON_DIR="$dir"
+        break
+      fi
+    done
+
+    if [ -z "$HWMON_DIR" ]; then
+      for dir in /sys/class/drm/card*/device/hwmon/hwmon*; do
+        if [ -f "$dir/name" ] && [ "$(cat "$dir/name")" = "amdgpu" ]; then
+          HWMON_DIR="$dir"
+          break
+        fi
+      done
+    fi
+
+    if [ -z "$HWMON_DIR" ]; then
+      echo "GPU Path invalid!"
+      exit 1
+    fi
+
+    while true; do
+      echo 1 > "$HWMON_DIR/pwm1_enable"
+      if [ -f "$HWMON_DIR/temp1_input" ]; then
+        TEMP=$(cat "$HWMON_DIR/temp1_input")
+        X=$((TEMP / 1000))
+
+        PWM_CALC=$(bc -l <<EOF
+          x = $X
+          p = (0.075 * (x^2)) - (2.82 * x) + 0.0
+          scale = 0
+          p / 1
+EOF
+        )
+
+        # Clamping
+        if [ "$PWM_CALC" -lt 50 ]; then
+          PWM=50
+        elif [ "$PWM_CALC" -gt 255 ]; then
+          PWM=255
+        else
+          PWM=$PWM_CALC
+        fi
+
+        echo $PWM > "$HWMON_DIR/pwm1"
+      fi
+      sleep 2
+    done
+    '';
+
+    serviceConfig = {
+      Restart = "always";
+      RestartSec = "5s";
+    };
+  };
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/ae5b0cba-8314-468c-8efc-4174aeca6027";
@@ -44,7 +121,12 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
-  swapDevices = [ ];
+  swapDevices = [ {
+    device = "/persist/swapfile";
+    size = 65536;
+  } ];
+
+  boot.resumeDevice = "/dev/disk/by-uuid/ae5b0cba-8314-468c-8efc-4174aeca6027";
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;

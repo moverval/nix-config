@@ -1,0 +1,135 @@
+"type" = "yellow"
+"constant" = "purple"
+"constant.numeric" = "orange"
+"constant.character.escape" = "orange"
+"string" = "green"
+"string.regexp" = "blue"
+"comment" = { fg = "grey0", modifiers = ["italic"] }
+"variable" = "fg0"
+"variable.builtin" = "blue"
+"variable.parameter" = "aqua"
+"variable.other.member" = "orange"
+"label" = "yellow"
+"punctuation" = "grey1"
+"punctuation.delimiter" = "grey1"
+"punctuation.bracket" = "grey2"
+"keyword" = "red"
+"keyword.directive" = "aqua"
+"operator" = "purple"
+"function" = "blue"
+"function.builtin" = "purple"
+"function.macro" = "aqua"
+"tag" = "yellow"
+"namespace" = "aqua"
+"attribute" = "aqua"
+"constructor" = "yellow"
+"module" = "blue"
+"special" = "purple"
+
+"markup.heading.marker" = "grey2"
+"markup.heading.1" = { fg = "red", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "orange", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "yellow", modifiers = ["bold"] }
+"markup.heading.4" = { fg = "green", modifiers = ["bold"] }
+"markup.heading.5" = { fg = "blue", modifiers = ["bold"] }
+"markup.heading.6" = { fg = "fg0", modifiers = ["bold"] }
+"markup.list" = "red"
+"markup.bold" = { modifiers = ["bold"] }
+"markup.italic" = { modifiers = ["italic"] }
+"markup.link.url" = { fg = "blue", modifiers = ["underlined"] }
+"markup.link.text" = "purple"
+"markup.quote" = "grey2"
+"markup.raw" = "green"
+
+"diff.plus" = "green"
+"diff.delta" = "orange"
+"diff.minus" = "red"
+
+"ui.background" = { bg = "bg0" }
+"ui.background.separator" = "grey0"
+"ui.cursor" = { fg = "bg0", bg = "fg0" }
+"ui.cursor.match" = { bg = "bg_visual_red" }
+"ui.cursor.insert" = { fg = "bg0", bg = "grey2" }
+"ui.cursor.select" = { fg = "bg0", bg = "blue" }
+"ui.cursorline.primary" = { bg = "bg1" }
+"ui.cursorline.secondary" = { bg = "bg1" }
+"ui.selection" = { bg = "bg_visual_yellow" }
+"ui.linenr" = "grey0"
+"ui.linenr.selected" = "fg0"
+"ui.statusline" = { fg = "fg0", bg = "bg3" }
+"ui.statusline.inactive" = { fg = "grey0", bg = "bg1" }
+"ui.statusline.normal" = { fg = "bg0", bg = "blue", modifiers = ["bold"] }
+"ui.statusline.insert" = { fg = "bg0", bg = "yellow", modifiers = ["bold"] }
+"ui.statusline.select" = { fg = "bg0", bg = "purple", modifiers = ["bold"] }
+"ui.bufferline" = { fg = "grey0", bg = "bg1" }
+"ui.bufferline.active" = { fg = "fg0", bg = "bg5", modifiers = ["bold"] }
+"ui.popup" = { fg = "grey2", bg = "bg2" }
+"ui.window" = { fg = "grey0", bg = "bg0" }
+"ui.help" = { fg = "fg0", bg = "bg2" }
+"ui.text" = "fg0"
+"ui.text.focus" = "fg0"
+"ui.menu" = { fg = "fg0", bg = "bg3" }
+"ui.menu.selected" = { fg = "bg0", bg = "blue", modifiers = ["bold"]  }
+"ui.virtual.whitespace" = { fg = "bg4" }
+"ui.virtual.indent-guide" = { fg = "bg4" }
+"ui.virtual.ruler" = { bg = "bg3" }
+"ui.virtual.inlay-hint" = "grey0" 
+
+"hint" = "blue"
+"info" = "aqua"
+"warning" = "yellow"
+"error" = "red"
+"diagnostic" = { underline = { style = "curl" } }
+"diagnostic.hint" = { underline = { color = "blue", style = "dotted" } }
+"diagnostic.info" = { underline = { color = "aqua", style = "dotted" } }
+"diagnostic.warning" = { underline = { color = "yellow", style = "curl" } }
+"diagnostic.error" = { underline = { color = "red", style = "curl" } }
+
+"ui.virtual.jump-label" = { fg = "red", modifiers = ["bold"] }
+
+[palette]
+# Backgrounds
+bg0 = "{{colors.surface.default.hex}}"
+bg1 = "{{colors.surface_container_lowest.default.hex}}"
+bg2 = "{{colors.surface_container_low.default.hex}}"
+bg3 = "{{colors.surface_container.default.hex}}"
+bg4 = "{{colors.surface_container_high.default.hex}}"
+bg5 = "{{colors.surface_container_highest.default.hex}}"
+
+# Statusline
+bg_statusline1 = "{{colors.surface_container_low.default.hex}}"
+bg_statusline2 = "{{colors.surface_container.default.hex}}"
+bg_statusline3 = "{{colors.surface_container_high.default.hex}}"
+
+# Diffs & Visual Highlights
+bg_diff_green = "{{colors.tertiary_container.default.hex}}"
+bg_visual_green = "{{colors.tertiary_container.default.hex}}"
+bg_diff_red = "{{colors.error_container.default.hex}}"
+bg_visual_red = "{{colors.error_container.default.hex}}"
+bg_diff_blue = "{{colors.primary_container.default.hex}}"
+bg_visual_blue = "{{colors.primary_container.default.hex}}"
+bg_visual_yellow = "{{colors.secondary_container.default.hex}}"
+bg_current_word = "{{colors.surface_container_highest.default.hex}}"
+
+# Foregrounds
+fg0 = "{{colors.on_surface.default.hex}}"
+fg1 = "{{colors.on_surface_variant.default.hex}}"
+
+# Accent Colors
+red = "{{colors.error.default.hex}}"
+orange = "{{colors.secondary.default.hex}}"
+yellow = "{{colors.secondary_container.default.hex}}"
+green = "{{colors.tertiary.default.hex}}"
+aqua = "{{colors.outline_variant.default.hex}}"
+blue = "{{colors.primary.default.hex}}"
+purple = "{{colors.inverse_primary.default.hex}}"
+
+# Accent Backgrounds
+bg_red = "{{colors.error.default.hex}}"
+bg_green = "{{colors.tertiary.default.hex}}"
+bg_yellow = "{{colors.secondary.default.hex}}"
+
+# Greys / Outlines
+grey0 = "{{colors.outline.default.hex}}"
+grey1 = "{{colors.outline_variant.default.hex}}"
+grey2 = "{{colors.on_surface_variant.default.hex}}"
